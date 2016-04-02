@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USTC MIS Tools</title>
+    <style type="text/css">
+        label {
+            width: 6em !important;
+        }
+        .label-fix {
+            margin-left: 6em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>USTC MIS Tools</h1>
+    {% if not login %}
+    <div class="login-form">
+        <form class="form-horizontal" role="form" action="{{ url_for('.login') }}" method="post">
+            <span class="help-block">
+                Please use the student id and password on http://mis.teach.ustc.edu.cn to login
+            </span>
+            <div class="form-group">
+                <label class="col-xs-1 control-label" for="user_code">StudentID</label>
+                <div class="col-xs-4">
+                    <input type="text" class="form-control" id="user_code" name="user_code" placeholder="Student ID">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-1 control-label" for="pwd">Password</label>
+                <div class="col-xs-4">
+                    <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="label-fix col-xs-4">
+                    <button type="submit" class="btn btn-default">Sign in</button>
+                </div>
+            </div>
+        </form>
+    </div><!-- login-form-end -->
+    {% else %}
+    <div class="option-menu">
+        <dl>
+            <dt><h3>Grade</h3></dt>
+            <dd>
+                <form class="form-inline" role="form" action="{{ url_for('.api_get_grade') }}" method="post">
+                    <select name="semester" class="form-control">
+                        {% for i in grade_semester_list %}
+                            {% if loop.index == 2 %}
+                                <option value="{{ i[0] }}" selected>{{ i[1] }}</option>
+                            {% else %}
+                                <option value="{{ i[0] }}">{{ i[1] }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-default">Check</button>
+                </form>
+            </dd>
+            <dt><h3>Timetable</h3></dt>
+            <dd>
+                <form class="form-inline" role="form" action="{{ url_for('.api_get_timetable') }}" method="post">
+                    <select name="semester" class="form-control">
+                        {% for i in timetable_semester_list %}
+                            {% if loop.index == 1 %}
+                                <option value="{{ i[0] }}" selected>{{ i[1] }}</option>
+                            {% else %}
+                                <option value="{{ i[0] }}">{{ i[1] }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-default">Check</button>
+                </form>
+            </dd>
+            <dt><h3>iCal File Download</h3></dt>
+            <dd>
+                <form class="form-inline" role="form" action="{{ url_for('.get_ical') }}" method="post">
+                    <select name="semester" class="form-control">
+                        {% for i in timetable_semester_list %}
+                            {% if loop.index == 1 %}
+                                <option value="{{ i[0] }}" selected>{{ i[1] }}</option>
+                            {% else %}
+                                <option value="{{ i[0] }}">{{ i[1] }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-default">Download</button>
+                </form>
+                <p><a href="http://en.wikipedia.org/wiki/ICalendar">What is iCal File</a></p>
+                <p>iCal File can be imported to Calendar Software, for example, Google Calendar, Apple Calendar, Microsoft Calendar, Outlook, etc</p>
+            </dd>
+        </dl>
+    </div><!-- option-menu-end -->
+    {% endif %}
+    <div>
+        <p>Designed by SJ Zhu @ USTC. <a href="https://github.com/zhsj/ustcmis" target="_blank">Source</a>, <a href="https://github.com/zhsj/ustcmis/issues" target="_blank">Feedback</a></p>
+    </div>
+</div>
+</body>
+</html>
+<link rel="stylesheet" href="{{ url_for('.static', filename='style.css') }}">
+
