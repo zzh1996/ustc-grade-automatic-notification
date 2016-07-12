@@ -82,6 +82,7 @@ def parse_grade(grade):
 
 
 olddata = []
+first_run = True
 while True:
     print 'Query...'
     try:
@@ -91,15 +92,23 @@ while True:
             login()
             continue
         data = parse_grade(grade)
-        print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'count :', len(data)
-        if len(data) != len(olddata) and len(olddata) > 0:
+        print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'Count :', len(data)
+        test_mail = False
+        if first_run:
+            ans = raw_input('Send test email? (y/n)')
+            if ans.lower() in ['', 'y', 'yes']:
+                test_mail = True
+        if len(data) != len(olddata) and not first_run or test_mail:
             text = ' , '.join(row[2] + ' ' + row[4] for row in data if row not in olddata)
+            if test_mail:
+                text = 'Test email. ' + text
             print 'Sending mail...'
             print 'Text:', text
             if enable_mail:
                 send_email(text, text.encode('utf-8'))
             print 'Mail sent.'
         olddata = data
+        first_run = False
     except Exception as e:
         if not isinstance(e, KeyboardInterrupt):
             print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'Error:', str(e)
