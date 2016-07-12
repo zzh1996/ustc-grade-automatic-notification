@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
 from newknn import Captcha
@@ -92,13 +93,11 @@ while True:
         data = parse_grade(grade)
         print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'count :', len(data)
         if len(data) != len(olddata) and len(olddata) > 0:
-            text = ''
-            for row in data:
-                if not row in olddata:
-                    text += row[2] + ' ' + row[4] + ' '
+            text = ' , '.join(row[2] + ' ' + row[4] for row in data if row not in olddata)
             print 'Sending mail...'
             print 'Text:', text
-            send_email(text, text.encode('utf-8'))
+            if enable_mail:
+                send_email(text, text.encode('utf-8'))
             print 'Mail sent.'
         olddata = data
     except Exception as e:

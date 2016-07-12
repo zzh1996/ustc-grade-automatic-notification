@@ -1,3 +1,4 @@
+enable_mail = True
 smtp_server = 'smtp.163.com'
 smtp_username = 'xxx@163.com'
 smtp_password = 'xxx'
