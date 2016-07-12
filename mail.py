@@ -1,23 +1,16 @@
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from config import *
 
-def send_email(user, pwd, recipient, subject, body):
-    gmail_user = user
-    gmail_pwd = pwd
-    FROM = user
-    TO = recipient if type(recipient) is list else [recipient]
-    SUBJECT = subject
-    TEXT = body
 
-    # Prepare actual message
-    message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
-    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
-    try:
-        server = smtplib.SMTP("smtp.163.com")
-        server.ehlo()
-        server.starttls()
-        server.login(gmail_user, gmail_pwd)
-        server.sendmail(FROM, TO, message)
-        server.close()
-        print 'successfully sent the mail'
-    except:
-        print "failed to send mail"
+def send_email(subject, html):
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = smtp_username
+    msg['To'] = smtp_to
+    msg.attach(MIMEText(html, 'html', 'utf-8'))
+    s = smtplib.SMTP(smtp_server)
+    s.login(smtp_username, smtp_password)
+    s.sendmail(smtp_username, smtp_to, msg.as_string())
+    s.quit()

@@ -1,112 +1,109 @@
+#!/usr/bin/env python
+
 from bs4 import BeautifulSoup
 from newknn import Captcha
-import urllib,urllib2,cookielib,os,zlib,time,getpass,sys
-import mail
+import urllib, urllib2, cookielib, os, zlib, time, getpass, sys
+from mail import send_email
+from config import *
 
-sourcemail='fydpfg1996@163.com'
-sourcemailpassword=''
-destmail='903806024@qq.com'
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
+}
+cookie_support = urllib2.HTTPCookieProcessor(cookielib.CookieJar())
+opener = urllib2.build_opener(cookie_support, urllib2.HTTPHandler)
+urllib2.install_opener(opener)
 
-try:
-    xuenian=sys.argv[1]
-except:
-    xuenian=20151
-#userCode=raw_input("student no: ")
-userCode='PB14011086'
-passWord=getpass.getpass()
 
-captcha = Captcha()
-login=False
-
-while not login:
- 
-    cookie_support= urllib2.HTTPCookieProcessor(cookielib.CookieJar())
-    opener = urllib2.build_opener(cookie_support, urllib2.HTTPHandler)
-    urllib2.install_opener(opener)
-
-    headers = {
-        'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
-    }
-    req = urllib2.Request(
-        url = 'http://mis.teach.ustc.edu.cn/',
-        headers = headers
-    )
-    content = urllib2.urlopen(req).read()
-    req = urllib2.Request(
-        url = 'http://mis.teach.ustc.edu.cn/randomImage.do',
-        headers = headers
-    )
-    content = urllib2.urlopen(req).read()
-
-    check=captcha.hack(content)
-    #print check
-
-    postdata=urllib.urlencode({
-        'userbz':'s',
-        'hidjym':'',
-        'userCode':userCode,
-        'passWord':passWord,
-        'check':check
-    })
-
-    req = urllib2.Request(
-        url = 'http://mis.teach.ustc.edu.cn/login.do',
-        data = postdata,
-        headers = headers
-    )
-    result = urllib2.urlopen(req).read()
-
-    error="<head><meta http-equiv='refresh' content='0; url=/userinit.do'></head>"
-
-    if error in result:
-        #print 'wrong code!'
-        pass
-    else:
-        login=True 
-
-postdata=urllib.urlencode({
-    'xuenian': xuenian,
-    'px': 1,
-    'zd': 0
-})
-
-req = urllib2.Request(
-    url = 'http://mis.teach.ustc.edu.cn/querycjxx.do',
-    data = postdata,
-    headers = headers
-)
-
-oldresult=""
-
-while True:
-    try:
-        result = urllib2.urlopen(req).read()
-        if result!=oldresult:
-            #print result
-            soup = BeautifulSoup(result, "html5lib")
-            #for i,line in enumerate(soup.find_all('tr')):
-            #    for j,elem in enumerate(line.find_all('td')):
-            #        print 'line=',i,' row=',j,' ',elem.get_text().encode('utf-8')
-            graderows=soup.find_all('tr')
-            gpa=graderows[0].find_all('td')[9].get_text().strip().encode('utf-8')
-            graderows=graderows[2:-1]
-            count=len(graderows)
-            print 'count =',count
-            data=[]
-            for row in graderows:
-                elems=row.find_all('td')
-                elems=[elems[x].get_text().encode('GBK') for x in [2,6,4]]
-                data.append(elems)
-            maxlen=max([len(x[0]) for x in data])
-            msg=''
-            for elems in data:
-                msg+= (elems[0].ljust(maxlen)+'\t'+elems[1]+'\t'+elems[2]).decode('GBK').encode('utf-8')
-                msg+='\n'
-            mail.send_email(sourcemail,sourcemailpassword,destmail,(data[-1][0]+' '+data[-1][2]).decode('GBK').encode('utf-8'),msg)
+def login():
+    captcha = Captcha()
+    has_login = False
+    while not has_login:
+        print 'Trying to login...'
+        req = urllib2.Request(
+            url='http://mis.teach.ustc.edu.cn/',
+            headers=headers
+        )
+        urllib2.urlopen(req, timeout=5).read()
+        req = urllib2.Request(
+            url='http://mis.teach.ustc.edu.cn/randomImage.do',
+            headers=headers
+        )
+        content = urllib2.urlopen(req, timeout=5).read()
+        code = captcha.hack(content)
+        print 'Recognized captcha code:', code
+        postdata = urllib.urlencode({
+            'userbz': 's',
+            'hidjym': '',
+            'userCode': student_no,
+            'passWord': ustcmis_password,
+            'check': code
+        })
+        req = urllib2.Request(
+            url='http://mis.teach.ustc.edu.cn/login.do',
+            data=postdata,
+            headers=headers
+        )
+        result = urllib2.urlopen(req, timeout=5).read()
+        # print result
+        if "alert" in result:
+            print 'Login incorrect!'
         else:
-            print "not changed , count =",count,", GPA =",gpa," ",time.strftime('%Y-%m-%d %X',time.localtime(time.time()))
-        oldresult=result
-        time.sleep(5)
-    except:
-        pass
+            has_login = True
+            print 'Login OK!'
 
+
+def get_grade():
+    postdata = urllib.urlencode({
+        'xuenian': semester,
+        'px': 1,
+        'zd': 0
+    })
+    req = urllib2.Request(
+        url='http://mis.teach.ustc.edu.cn/querycjxx.do',
+        data=postdata,
+        headers=headers
+    )
+    return urllib2.urlopen(req, timeout=5).read()
+
+
+def parse_grade(grade):
+    soup = BeautifulSoup(grade, "html5lib")
+    # for i,line in enumerate(soup.find_all('tr')):
+    #    for j,elem in enumerate(line.find_all('td')):
+    #        print 'line=',i,' row=',j,' ',elem.get_text().encode('utf-8')
+    rows = soup.find_all('tr')[2:]
+    data = []
+    for row in rows:
+        elems = row.find_all('td')
+        if len(elems) == 8:
+            data.append([td.get_text() for td in elems])
+    return data
+
+
+olddata = []
+while True:
+    print 'Query...'
+    try:
+        grade = get_grade()
+        if "userinit" in grade:
+            print 'Not login.'
+            login()
+            continue
+        data = parse_grade(grade)
+        print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'count :', len(data)
+        if len(data) != len(olddata) and len(olddata) > 0:
+            text = ''
+            for row in data:
+                if not row in olddata:
+                    text += row[2] + ' ' + row[4] + ' '
+            print 'Sending mail...'
+            print 'Text:', text
+            send_email(text, text.encode('utf-8'))
+            print 'Mail sent.'
+        olddata = data
+    except Exception as e:
+        if not isinstance(e, KeyboardInterrupt):
+            print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'Error:', str(e)
+        else:
+            break
+    time.sleep(5)

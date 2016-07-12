@@ -1,0 +1,8 @@
+smtp_server = 'smtp.163.com'
+smtp_username = 'xxx@163.com'
+smtp_password = 'xxx'
+smtp_to = 'xxx@163.com'
+
+student_no = 'PBxxxxxxxx'
+ustcmis_password = 'xxx'
+semester = '20152'
