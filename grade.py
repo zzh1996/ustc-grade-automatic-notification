@@ -103,7 +103,7 @@ while True:
             if test_mail:
                 text = 'Test email. ' + text
             print 'Sending mail...'
-            print 'Text:', text
+            print 'Text:', text.encode('utf8')
             if enable_mail:
                 send_email(text, text.encode('utf-8'))
             print 'Mail sent.'
