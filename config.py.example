@@ -7,3 +7,6 @@ smtp_to = 'xxx@163.com'
 student_no = 'PBxxxxxxxx'
 ustcmis_password = 'xxx'
 semester = '20152'
+
+req_timeout = 10
+duration = 60
