@@ -24,12 +24,12 @@ def login():
             url='http://mis.teach.ustc.edu.cn/',
             headers=headers
         )
-        urllib2.urlopen(req, timeout=5).read()
+        urllib2.urlopen(req, timeout=req_timeout).read()
         req = urllib2.Request(
             url='http://mis.teach.ustc.edu.cn/randomImage.do',
             headers=headers
         )
-        content = urllib2.urlopen(req, timeout=5).read()
+        content = urllib2.urlopen(req, timeout=req_timeout).read()
         code = captcha.hack(content)
         print 'Recognized captcha code:', code
         postdata = urllib.urlencode({
@@ -44,7 +44,7 @@ def login():
             data=postdata,
             headers=headers
         )
-        result = urllib2.urlopen(req, timeout=5).read()
+        result = urllib2.urlopen(req, timeout=req_timeout).read()
         # print result
         if "alert" in result:
             print 'Login incorrect!'
@@ -64,7 +64,7 @@ def get_grade():
         data=postdata,
         headers=headers
     )
-    return urllib2.urlopen(req, timeout=5).read()
+    return urllib2.urlopen(req, timeout=req_timeout).read()
 
 
 def parse_grade(grade):
@@ -103,7 +103,7 @@ while True:
             if test_mail:
                 text = 'Test email. ' + text
             print 'Sending mail...'
-            print 'Text:', text
+            print 'Text:', text.encode('utf8')
             if enable_mail:
                 send_email(text, text.encode('utf-8'))
             print 'Mail sent.'
@@ -114,4 +114,4 @@ while True:
             print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'Error:', str(e)
         else:
             break
-    time.sleep(5)
+    time.sleep(duration)
