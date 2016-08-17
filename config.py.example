@@ -9,4 +9,4 @@ ustcmis_password = 'xxx'
 semester = '20152'
 
 req_timeout = 10
-duration = 60
+interval = 60

@@ -114,4 +114,4 @@ while True:
             print time.strftime('%Y-%m-%d %X', time.localtime(time.time())), 'Error:', str(e)
         else:
             break
-    time.sleep(duration)
+    time.sleep(interval)
