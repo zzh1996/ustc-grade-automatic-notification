@@ -72,12 +72,15 @@ def parse_grade(grade):
     # for i,line in enumerate(soup.find_all('tr')):
     #    for j,elem in enumerate(line.find_all('td')):
     #        print 'line=',i,' row=',j,' ',elem.get_text().encode('utf-8')
-    rows = soup.find_all('tr')[2:]
+    flag = 0
+    rows = soup.find_all('tr')
     data = []
     for row in rows:
         elems = row.find_all('td')
         if len(elems) == 8:
-            data.append([td.get_text() for td in elems])
+            if flag:
+                data.append([td.get_text() for td in elems])
+            flag = 1
     return data
 
 
