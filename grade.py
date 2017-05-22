@@ -54,14 +54,8 @@ def login():
 
 
 def get_grade():
-    postdata = urllib.urlencode({
-        'xuenian': semester,
-        'px': 1,
-        'zd': 0
-    })
     req = urllib2.Request(
-        url='http://mis.teach.ustc.edu.cn/querycjxx.do',
-        data=postdata,
+        url='http://mis.teach.ustc.edu.cn/initfqcjxx.do?tjfs=1',
         headers=headers
     )
     return urllib2.urlopen(req, timeout=req_timeout).read()
@@ -76,7 +70,7 @@ def parse_grade(grade):
     data = []
     for row in rows:
         elems = row.find_all('td')
-        if len(elems) == 8:
+        if len(elems) == 7:
             data.append([td.get_text() for td in elems])
     return data
 
@@ -99,7 +93,7 @@ while True:
             if ans.lower() in ['', 'y', 'yes']:
                 test_mail = True
         if len(data) != len(olddata) and not first_run or test_mail:
-            text = ' , '.join(row[2] + ' ' + row[4] for row in data if row not in olddata)
+            text = ' , '.join(row[2] + ' ' + row[3] for row in data if row not in olddata)
             if test_mail:
                 text = 'Test email. ' + text
             print 'Sending mail...'
