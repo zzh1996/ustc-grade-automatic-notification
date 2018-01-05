@@ -18,8 +18,8 @@ class Captcha:
         train_data = [cv2.imread(i, 0) for i in train_file]
         train = np.array(train_data).reshape(-1, 400).astype(np.float32)
         label = np.array(label).reshape(-1)
-        self.knn = cv2.KNearest()
-        self.knn.train(train, label)
+        self.knn = cv2.ml.KNearest_create()
+        self.knn.train(train, cv2.ml.ROW_SAMPLE, label)
 
     def hack(self, img):
         test_img_array = np.asarray(bytearray(img), dtype=np.uint8)
@@ -28,7 +28,7 @@ class Captcha:
         test_final = cv2.threshold(test_gray, 100, 255, cv2.THRESH_BINARY)[1]
         test_cells = np.array([i.reshape(-1).astype(np.float32)
                             for i in np.hsplit(test_final, 4)])
-        ret, result, neighbours, dist = self.knn.find_nearest(test_cells, k=1)
+        ret, result, neighbours, dist = self.knn.findNearest(test_cells, k=1)
         result = result.reshape(-1)
         letter = []
         for i in result:
