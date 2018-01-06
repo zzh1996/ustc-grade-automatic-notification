@@ -25,7 +25,7 @@ git clone https://github.com/zzh1996/ustc-grade-automatic-notification.git
 2、安装必要的库
 
 ```shell
-sudo apt install python python-bs4 python-numpy python-opencv python-html5lib -y
+sudo apt install python python-bs4 python-numpy python-opencv python-html5lib vim -y
 ```
 
 3、修改配置文件
