@@ -10,7 +10,10 @@ def send_email(subject, html):
     msg['From'] = smtp_username
     msg['To'] = smtp_to
     msg.attach(MIMEText(html, 'html', 'utf-8'))
-    s = smtplib.SMTP(smtp_server)
+    if smtp_ssl:
+        s = smtplib.SMTP_SSL(smtp_server)
+    else:
+        s = smtplib.SMTP(smtp_server)
     s.login(smtp_username, smtp_password)
     s.sendmail(smtp_username, smtp_to, msg.as_string())
     s.quit()
