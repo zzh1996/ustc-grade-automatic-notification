@@ -48,6 +48,18 @@ vim config.py
 
 如果在服务器上运行，为了保证 ssh 断开后脚本仍在运行，请使用 tmux 或 screen。
 
+### 使用 Docker 部署
+
+假设已经安装了 Docker
+
+1、在一个空目录中，放入本项目的 `Dockerfile`。
+
+2、将本项目的 `config_example.py` 按照需求修改好，命名为 `config.py`，并且和 `Dockerfile` 放在同一个目录下。
+
+3、在这个目录下，运行 `docker build -t grade .`。
+
+4、运行 `docker run -it grade` 启动脚本。
+
 ### 已知问题
 
 1、暂时没加识别学号或密码错误的部分，如果发现程序反复尝试登录而且一直失败，请检查学号和密码是否错误。
@@ -61,4 +73,3 @@ vim config.py
 ### 反馈 bug
 
 开 issue 或发邮件至 `zzh1996@科大学生邮箱`
-
