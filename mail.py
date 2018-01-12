@@ -1,15 +1,13 @@
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from config import *
 
 
-def send_email(subject, html):
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = subject
-    msg['From'] = smtp_username
-    msg['To'] = smtp_to
-    msg.attach(MIMEText(html, 'html', 'utf-8'))
+def send_email(subject, text):
+    msg = MIMEText(text)
+    msg.add_header('Subject', subject)
+    msg.add_header('From', smtp_username)
+    msg.add_header('To', smtp_to)
     if smtp_ssl:
         s = smtplib.SMTP_SSL(smtp_server)
     else:
