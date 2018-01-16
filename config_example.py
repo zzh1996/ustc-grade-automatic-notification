@@ -1,4 +1,6 @@
-# encoding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 enable_mail = True  # 此行表示是否发送邮件提醒，设置为 True 发邮件
 smtp_server = 'smtp.163.com'  # 此行表示 smtp 服务器地址
 smtp_username = 'xxx@163.com'  # 此行表示发件人邮箱地址
