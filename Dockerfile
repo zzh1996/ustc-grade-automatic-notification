@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:16.04
 RUN apt update && apt install python python-bs4 python-numpy python-opencv python-html5lib vim git -y && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/zzh1996/ustc-grade-automatic-notification.git
 WORKDIR ustc-grade-automatic-notification
